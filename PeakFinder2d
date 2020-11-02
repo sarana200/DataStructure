@@ -1,0 +1,165 @@
+package com.company;
+
+import java.util.Random;
+
+class PeakFinder2D {
+    int[][] a;
+    int j=0;
+    int rowi;
+    public class Point {
+        int X;
+        int Y;
+    }
+
+    Point obj = new Point();
+
+    public PeakFinder2D(int nrow, int ncol) {
+        obj.X = nrow;
+        obj.Y = ncol;
+        a = new int[nrow][ncol];
+        Random r = new Random();
+        a[nrow][ncol] = r.nextInt();
+    }
+
+    public int greedyAlg() {
+        int peak = a[0][0];
+        for (int row = 0; row < obj.X; row++) {
+            for (int col = 0; col < obj.Y; col++) {
+                if (col == obj.Y - 1) {
+                    if (peak <= a[row + 1][col]) {
+                        peak = a[row + 1][col];
+                    } else {
+                        return peak;
+                    }
+                } else if (row == obj.X - 1) {
+                    if (peak <= a[row][col + 1]) {
+                        peak = a[row][col + 1];
+                    } else {
+                        return peak;
+                    }
+                } else {
+                    if (peak <= a[row][col + 1]) {
+                        peak = a[row][col + 1];
+                    } else if (peak <= a[row + 1][col]) {
+                        peak = a[row + 1][col];
+                    } else if (peak > a[row][col + 1] && peak > a[row + 1][col]) {
+                        return peak;
+                    }
+                }
+            }
+
+        }
+        return peak;
+    }
+
+    public int findMax(int[] b) {
+        int imax = 0;
+        for (int i = 0; i < a.length; i++) {
+            if (b[i] > b[imax]) {
+                imax = i;
+            }
+        }
+        return imax;
+    }
+
+    public int findMaxOnCol(int col) {
+        int imax = 0;
+        for (int i = 0; i <obj.Y; i++) {
+            if (a[i][col] > a[imax][col]) {
+                imax = i;
+
+            }
+        }
+        return imax;
+    }
+
+    public int findMaxOnRow(int row) {
+        int imax = 0;
+        for (int i = 0; i < obj.X; i++) {
+            if (a[row][i] > a[row][imax]) {
+                imax = i;
+            }
+        }
+        return imax;
+    }
+
+    public int divideAndConquer1(int startcol, int endcol) {
+        int midcol = (startcol + endcol) / 2;
+        int imax = findMaxOnCol(midcol);
+        ///base case
+        if(midcol==endcol-1){ //boundary conditions
+            return imax;
+        }else{
+            if (a[imax][midcol] >= a[imax][midcol + 1] && a[imax][midcol] >= a[imax][midcol - 1]){
+                return a[imax][midcol];
+            }
+
+            else if (a[imax][midcol] < a[imax][midcol + 1]){
+                return divideAndConquer1(midcol, endcol);
+            }
+
+            else if (a[imax][midcol] < a[imax][midcol - 1]){
+                return divideAndConquer1(startcol, midcol);
+            }
+        }
+        return imax;
+    }
+
+
+
+    /** derste anlatilan divide and conquer  yontemini kullanarak O(n+m)
+     *  zamanda peak bulan algoritmanin implemantasyonunu yaziniz*/
+    public int divideAndConquer1(int startrow, int startcol, int endrow, int endcol) {
+        int satirlength = endrow - 1, sutunlength = endcol - 1;
+
+        if (j % 2 == 0) {
+            int midcol = (startcol + endcol) / 2;
+            int imax = findMaxOnCol(midcol);
+            rowi=imax; //row index degeri
+            if (midcol == endcol - 1) { //boundary conditions
+                return imax;
+            } else {
+                if (a[imax][midcol] >= a[imax][midcol + 1] && a[imax][midcol] >= a[imax][midcol - 1]) {
+                    return a[imax][midcol];
+                } else if (a[imax][midcol] < a[imax][midcol + 1]) {
+                    j++;
+                    return divideAndConquer1(startrow,midcol,endrow,endcol);
+                } else if (a[imax][midcol] < a[imax][midcol - 1]) {
+                    j++;
+                    return divideAndConquer1(startrow,startcol,endrow,midcol);
+                }
+            }
+        } else if (j % 2 != 0) {
+            int rymax = findMaxOnRow(rowi);
+
+            if (a[rowi+1][rymax] <= a[rowi][rymax] && a[rowi-1][rymax] <= a[rowi][rymax]) {
+                return a[rowi][rymax];
+            } else if (a[rowi][rymax] < a[rowi+1][rymax]) {
+                j--;
+                return divideAndConquer1(rowi+1,startcol,endrow,endcol);
+            } else if (a[rowi][rymax] < a[rowi-1][rymax ]) {
+                j--;
+                return divideAndConquer1(rowi-1,startcol,rowi ,endcol);
+            }
+        }
+        return 0;
+    }
+
+    /** prints elements of a */
+    void printArray(){
+        for (int i=0; i<obj.X; i++){
+            for(int j=0; j<obj.Y; j++){
+                System.out.print(a[i][j]+" ");
+            }
+        }
+    }
+    static void testGreedyAlg(){
+    }
+    static void testDivideAndConq1(){
+    }
+    static void testDivideAndConq2(){
+
+    }
+}
+
+
